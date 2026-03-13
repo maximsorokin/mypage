@@ -1,12 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>maxim sorokin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>maxim sorokin</title>
+    <style>
+        body {
+            background-color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Тёмная тема */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: black;
+            }
+        }
+
+        .emoji-container {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .emoji {
+            font-size: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out; /* Уменьшил длительность анимации до 0.25 секунд */
+        }
+
+        .hidden {
+            opacity: 0;
+            transform: scale(0.1);
+        }
+    </style>
 </head>
 <body>
-  Hey! I am a product designer at citymobil
+    <div class="emoji-container"></div>
+    <script>
+        const container = document.querySelector('.emoji-container');
+        const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🪲', '🪳', '🕷️', '🕸️', '🦂', '🐢', '🐍', '🦎', '🦖', '🦕', '🐙', '🦑', '🦐', '🦞', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊'];
+
+        function getRandomEmoji() {
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        function createEmojiGrid() {
+            container.innerHTML = '';
+            const rows = Math.ceil(window.innerHeight / 100);
+            const cols = Math.ceil(window.innerWidth / 100);
+            for (let i = 0; i < rows * cols; i++) {
+                const div = document.createElement('div');
+                div.className = 'emoji';
+                div.textContent = getRandomEmoji();
+                div.dataset.originalEmoji = div.textContent;
+                
+                // Добавляем обработчик для hover на десктопах и tap на мобильных устройствах
+                div.addEventListener('mouseenter', hideEmojiOnHover);
+                div.addEventListener('touchstart', hideEmojiOnTouch);  // Обработка тапа на мобильных устройствах
+                
+                container.appendChild(div);
+
+                startRandomEmojiChange(div);
+            }
+        }
+
+        // Функция для скрытия эмодзи по наведению
+        function hideEmojiOnHover(event) {
+            const emoji = event.target;
+            if (emoji.classList.contains('emoji')) {
+                hideEmoji(emoji);
+            }
+        }
+
+        // Функция для скрытия эмодзи по тапу на мобильных устройствах
+        function hideEmojiOnTouch(event) {
+            const emoji = event.target;
+            if (emoji.classList.contains('emoji')) {
+                hideEmoji(emoji);
+                // Предотвращаем всплытие события тапа, чтобы не было двойного вызова
+                event.preventDefault();
+            }
+        }
+
+        // Основная функция для скрытия и показа эмодзи
+        function hideEmoji(emoji) {
+            emoji.classList.add('hidden');
+            const originalEmoji = emoji.dataset.originalEmoji;
+            setTimeout(() => {
+                emoji.classList.remove('hidden');
+                emoji.textContent = originalEmoji;
+            }, 900); // Время показа эмодзи через 0,9 секунд
+        }
+
+        // Функция для случайной смены эмодзи с индивидуальным интервалом
+        function startRandomEmojiChange(emojiElement) {
+            const randomInterval = Math.floor(Math.random() * 1000) + 100;
+            setInterval(() => {
+                const newEmoji = getRandomEmoji();
+                emojiElement.textContent = newEmoji;
+                emojiElement.dataset.originalEmoji = newEmoji;
+            }, randomInterval);
+        }
+
+        createEmojiGrid();
+        window.addEventListener('resize', createEmojiGrid);
+    </script>
 </body>
 </html>
